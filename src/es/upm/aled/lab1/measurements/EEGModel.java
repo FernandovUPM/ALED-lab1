@@ -2,11 +2,13 @@ package es.upm.aled.lab1.measurements;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,8 +58,10 @@ public class EEGModel {
 	 * @param measurements The Measurements that make up the EEGModel.
 	 */
 	public EEGModel(Measurement[] measurements) {
-		// TODO
-		
+		this.measurements = new ArrayList<>();
+		for (Measurement m : measurements) {
+			this.measurements .add(m);
+		}
 	}
 
 	/**
@@ -131,9 +135,21 @@ public class EEGModel {
 	 */
 	public void saveFile(String fileName) throws IOException {
 		// TODO
-		
-	}
+		    File f = new File(fileName);
+		    FileOutputStream fos = new FileOutputStream(f);
+		    PrintStream ps = new PrintStream(fos); 
+		    String line = "0"; 
 
+		    for (Measurement m : this.measurements) {
+		       
+		        for (int i = 0; i < m.numChannels(); i++) {
+		            line += ", " + m.getChannel(i);
+		        }
+		        ps.println(line);
+		    }
+		    ps.close();
+		    fos.close();
+		}
 	/**
 	 * Plots the data of the EEGModel using the classes in the es.upm.aled.lab1.gui
 	 * package. The max and min values of each channel area calculated so the window
