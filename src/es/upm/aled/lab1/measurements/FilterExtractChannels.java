@@ -15,25 +15,24 @@ public class FilterExtractChannels implements Filter {
 	 */
 	int[] validChannels;
 	public FilterExtractChannels(int[] validChannels) {
-		// TODO
 		this.validChannels = validChannels;
-		}
+	}
 
 	@Override
 	public EEGModel applyFilter(EEGModel eeg) {
-		Measurement[] originalMeasurements = eeg.getMeasurements();
-		Measurement[] newMeasurements = new Measurement[originalMeasurements.length];
-		
-		for (int i = 0; i < originalMeasurements.length; i++) {
-			Measurement originalM = originalMeasurements[i];
-			float[] extractedValues = new float[validChannels.length];
-			for (int j= 0; j < validChannels.length; j++){
-				int canalDeseado = validChannels[j];
-				extractedValues[j] = originalM.getChannel(canalDeseado);
-			}
-			newMeasurements[i] = new Measurement(extractedValues);
+		Measurement[] medidas = eeg.getMeasurements();
+		Measurement[] filtrado = new Measurement[medidas.length];
+		for(int i= 0; i < medidas.length; i++) {
+			float[] canales = new float[validChannels.length];
+			int indice = 0;
+			for(int k = 0; k < validChannels.length; k++) {
+				canales[indice++] =  medidas[i].getChannel(validChannels[k]);
 		}
-		return new EEGModel(newMeasurements);
-    }
-
+			
+			filtrado[i] = new Measurement(canales);
+		}
+		return new EEGModel(filtrado);
+		
+	}
 }
+

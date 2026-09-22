@@ -19,15 +19,26 @@ public class FilterExtractPeriod implements Filter {
 	 * @param min Start of the period to be extracted.
 	 * @param max End of the period to be extracted.
 	 */
+	private int min;
+	private int max;
+	
 	public FilterExtractPeriod(int min, int max) {
-		// TODO
-		
+		this.min= min;
+		this.max=max;
 	}
 
 	@Override
 	public EEGModel applyFilter(EEGModel eeg) {
-		// TODO
-		
-		return null;
+		Measurement[] medidas = eeg.getMeasurements();
+		if(medidas.length > min && medidas.length > max) {	
+		Measurement[] filtrado = new Measurement[max-min+1];
+		int k = 0;
+		for (int i = min; i<=max; i++) {
+			filtrado[k++] = medidas[i];
+		}
+		return new EEGModel(filtrado);
+		}
+		return new EEGModel();
 	}
-}
+	}
+	

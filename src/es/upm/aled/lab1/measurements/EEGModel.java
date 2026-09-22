@@ -58,10 +58,9 @@ public class EEGModel {
 	 * @param measurements The Measurements that make up the EEGModel.
 	 */
 	public EEGModel(Measurement[] measurements) {
-		this.measurements = new ArrayList<>();
-		for (Measurement m : measurements) {
-			this.measurements .add(m);
-		}
+		this.measurements = new ArrayList<Measurement>();
+		for(Measurement m : measurements)
+			addMeasurement(m);
 	}
 
 	/**
@@ -93,9 +92,7 @@ public class EEGModel {
 	 * @return The new EEGModel.
 	 */
 	public EEGModel filter(Filter filter) {
-		// TODO
-		
-		return null;
+		return filter.applyFilter(this);
 	}
 
 	/**
@@ -134,22 +131,23 @@ public class EEGModel {
 	 * @throws IOException Thrown if the file can't be written.
 	 */
 	public void saveFile(String fileName) throws IOException {
-		// TODO
-		    File f = new File(fileName);
-		    FileOutputStream fos = new FileOutputStream(f);
-		    PrintStream ps = new PrintStream(fos); 
-		    String line = "0"; 
-
-		    for (Measurement m : this.measurements) {
-		       
-		        for (int i = 0; i < m.numChannels(); i++) {
-		            line += ", " + m.getChannel(i);
-		        }
-		        ps.println(line);
-		    }
-		    ps.close();
-		    fos.close();
-		}
+		   File f = new File(fileName);
+		   FileOutputStream fos = new FileOutputStream(f);
+		   PrintStream ps = new PrintStream(fos);
+		   String line = "";
+		   int index = 0;
+		   for (Measurement m : measurements) {
+			   ps.print((index++)%256);
+			   if(m != null) {
+				   for(int i = 0; i < m.numChannels(); i++) {
+				   line += ", " + m.getChannel(i);
+				   }
+				   ps.print(line);
+				   ps.println();
+			   }   
+		   }
+		   fos.close();
+	}
 	/**
 	 * Plots the data of the EEGModel using the classes in the es.upm.aled.lab1.gui
 	 * package. The max and min values of each channel area calculated so the window
@@ -261,17 +259,24 @@ public class EEGModel {
 		return new Measurement(curDataPacket_values);
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		if (args.length > 0) {
 			EEGModel eeg = new EEGModel(args[0]);
+			int[] validChannels = {8,9,10};
+			
+			eeg = eeg.filter(new FilterExtractPeriod(2750, 5750));
+			eeg = eeg.filter(new FilterExtractChannels(validChannels));
 			eeg.plotData();
-			// TODO
+			
 			
 		} else {
 			EEGModel eeg = new EEGModel();
 			eeg.createSyntheticData(1000);
-			// TODO
-			eeg.saveFile("Synthetic.txt");
+			try {
+				eeg.saveFile("Synthetic.txt");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
