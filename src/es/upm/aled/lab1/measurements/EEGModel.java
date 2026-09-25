@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
+import java.lang.Integer;
 import es.upm.aled.lab1.gui.EEG_GUI;
 
 /**
@@ -95,6 +95,21 @@ public class EEGModel {
 		return filter.applyFilter(this);
 	}
 
+	
+	public static boolean checkConsistency(String string) {
+		String[] separado = string.split("\n");
+		int contador = 0;
+		for(String s : separado) {
+			String[] primerE = s.split(",");
+			int numero = Integer.parseInt(primerE[0].trim());
+			if (!(numero == contador))
+				return false;
+			contador = (contador+1)%256;
+		}
+		
+		
+		return true;
+	}
 	/**
 	 * Fills the measurements from the contents of an OpenBCI file, a CSV file in
 	 * which each line represents a measurement. The first column is an index modulo
